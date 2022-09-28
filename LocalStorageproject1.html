@@ -1,0 +1,109 @@
+
+<html>
+    <body>
+        <form  onsubmit="saveToLocalStorage(event)">
+            <label> Choose expense amount</label>
+            <input id='expenseAmount' type="number" name="expenseAmount"  required/>
+            <label> Choose description</label>
+            <input id='description' type="text" name="descriptionId"  required/>
+
+            <label for="category">Choose Category</label>
+            <select id="category" class="form-control">
+            <option value="Active">Movie</option>
+            <option value="Inactive">Coffee</option>
+            <option value="Inactive">Diesel</option>
+            <option value="Inactive">On Vocation</option>
+        </select>
+
+
+            
+            <button> Submit </button>
+        </form>
+        <ul id='listOfUsers'></ul>
+        <script>
+            function saveToLocalStorage(event) {
+                event.preventDefault();
+                const name = event.target.expenseAmount.value;
+                const description = event.target.descriptionId.value;
+                const category = event.target.category.value;
+                
+                const obj = {
+                    name,
+                    description,
+                    category
+                }
+                localStorage.setItem(obj.description, JSON.stringify(obj))
+                showNewUserOnScreen(obj)
+            }
+
+            window.addEventListener("DOMContentLoaded", () => {
+                const localStorageObj = localStorage;
+                const localstoragekeys  = Object.keys(localStorageObj)
+
+                for(var i =0; i< localstoragekeys.length; i++){
+                    const key = localstoragekeys[i]
+                    const userDetailsString = localStorageObj[key];
+                    const userDetailsObj = JSON.parse(userDetailsString);
+                    showNewUserOnScreen(userDetailsObj)
+                }
+            })
+
+            function showNewUserOnScreen(user){
+                document.getElementById('description').value = '';
+                document.getElementById('expenseAmount').value = '';
+                document.getElementById('category').value ='';
+                // console.log(localStorage.getItem(user.descriptionId))
+                if(localStorage.getItem(user.description) !== null){
+                    removeUserFromScreen(user.description)
+                }
+
+                const parentNode = document.getElementById('listOfUsers');
+                const childHTML = `<li id=${user.description}> ${user.name} - ${user.description}
+                                        <button onclick=deleteUser('${user.description}')> Delete Expense </button>
+                                        <button onclick=editUserDetails('${user.description}','${user.name}','${user.category}')>Edit Expense </button>
+                                     </li>`
+
+                parentNode.innerHTML = parentNode.innerHTML + childHTML;
+            }
+
+            //Edit User
+
+            function editUserDetails(descriptionId, name, category){
+
+                document.getElementById('description').value = descriptionId;
+                document.getElementById('expenseAmount').value = name;
+                document.getElementById('phonenumber').value =category;
+
+                deleteUser(descriptionId)
+             }
+
+            // deleteUser('abc@gmail.com')
+
+            function deleteUser(descriptionId){
+                console.log(descriptionId)
+                localStorage.removeItem(descriptionId);
+                removeUserFromScreen(descriptionId);
+
+            }
+
+            function removeUserFromScreen(descriptionId){
+                const parentNode = document.getElementById('listOfUsers');
+                const childNodeToBeDeleted = document.getElementById(descriptionId);
+                if(childNodeToBeDeleted) {
+                    parentNode.removeChild(childNodeToBeDeleted)
+                }
+            }
+
+
+
+
+
+
+
+        </script>
+
+
+    </body>
+</html>
+
+
